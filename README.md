@@ -97,11 +97,11 @@ Submitted by: Brianna Farinango
 ### Walkthrough Video
 
 <div>
-    <a href="https://www.loom.com/share/093b9b8d8d3347089e69f853df9e038e">
-      <p>Loom | Free Screen & Video Recording Software | Loom - 27 June 2025 - Watch Video</p>
+    <a href="https://www.loom.com/share/74be2a0c9d474b7599e5eb000c8d7dc1">
+      <p>Student Store - 28 June 2025 - Watch Video</p>
     </a>
-    <a href="https://www.loom.com/share/093b9b8d8d3347089e69f853df9e038e">
-      <img style="max-width:300px;" src="https://cdn.loom.com/sessions/thumbnails/093b9b8d8d3347089e69f853df9e038e-e4fd9fbe155c63fc-full-play.gif">
+    <a href="https://www.loom.com/share/74be2a0c9d474b7599e5eb000c8d7dc1">
+      <img style="max-width:300px;" src="https://cdn.loom.com/sessions/thumbnails/74be2a0c9d474b7599e5eb000c8d7dc1-09aa0d6db6ec9752-full-play.gif">
     </a>
   </div>
 
