@@ -19,15 +19,25 @@ model Product {
 }
 
 model Order {
+<<<<<<< HEAD
   order_id    Int         @id @default(autoincrement())
   customer_id Int
   total_price Decimal?
   status      String
   createdAt   DateTime    @default(now())
+=======
+  id          Int       @id @default(autoincrement())
+  customerId  Int
+  totalPrice  Decimal?
+  status      String
+  createdAt   DateTime  @default(now())
+  
+>>>>>>> 725ac35fd6eaf1346811a61982890bcadc82ef75
   orderItems  OrderItem[]
 }
 
 model OrderItem {
+<<<<<<< HEAD
   order_item_id Int     @id @default(autoincrement())
   order_id      Int
   product_id    Int
@@ -36,3 +46,14 @@ model OrderItem {
   order         Order   @relation(fields: [order_id], references: [order_id], onDelete: Cascade)
   product       Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
 }
+=======
+  id          Int     @id @default(autoincrement())
+  orderId     Int
+  productId   Int
+  quantity    Int
+  price       Decimal
+  
+  order       Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product     Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+>>>>>>> 725ac35fd6eaf1346811a61982890bcadc82ef75
