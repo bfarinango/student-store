@@ -20,7 +20,7 @@ exports.getById = async (req, res) => {
   try {
     const id = Number(req.params.id);
     const order = await prisma.order.findUnique({
-      where: { order_id },
+      where: { id },
       include: {
         orderItems: {
           include: { product: true }
@@ -39,30 +39,66 @@ exports.getById = async (req, res) => {
 };
 
 exports.create = async (req, res) => {
-    const { customer_id, status } = req.body;
+  try {
+    const { customerId, status, items } = req.body;
     
-    try {
-        const newOrder = await prisma.order.create({
-            data: { 
-                customer_id: Number(customer_id), 
-                totalPrice: 0, 
-                status 
-            }
-        });
-        res.status(201).json(newOrder);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
+    if (!customerId || !status) {
+      return res.status(400).json({ 
+        error: 'Customer ID and status are required' 
+      });
     }
+
+    const newOrder = await prisma.order.create({
+      data: { 
+        customerId: Number(customerId), 
+        totalPrice: 0, 
+        status 
+      }
+    });
+
+    if (items && items.length > 0) {
+      for (const item of items) {
+        await prisma.orderItem.create({
+          data: {
+            orderId: newOrder.id,
+            productId: Number(item.productId),
+            quantity: Number(item.quantity),
+            price: Number(item.price)
+          }
+        });
+      }
+
+      const orderItems = await prisma.orderItem.findMany({
+        where: { orderId: newOrder.id }
+      });
+      
+      const total = orderItems.reduce((sum, item) => {
+        return sum + (item.quantity * Number(item.price));
+      }, 0);
+
+      const updatedOrder = await prisma.order.update({
+        where: { id: newOrder.id },
+        data: { totalPrice: total }
+      });
+
+      res.status(201).json(updatedOrder);
+    } else {
+      res.status(201).json(newOrder);
+    }
+    
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 };
 
 exports.update = async (req, res) => {
   try {
     const id = Number(req.params.id);
-    const { customer_id, status } = req.body;
+    const { customerId, status } = req.body;
     
     const updatedOrder = await prisma.order.update({
       where: { id },
-      data: { customer_id, status }
+      data: { customerId, status }
     });
     
     res.json(updatedOrder);
