@@ -20,7 +20,7 @@ exports.getById = async (req, res) => {
   try {
     const id = Number(req.params.id);
     const order = await prisma.order.findUnique({
-      where: { id },
+      where: { order_id },
       include: {
         orderItems: {
           include: { product: true }
@@ -39,58 +39,30 @@ exports.getById = async (req, res) => {
 };
 
 exports.create = async (req, res) => {
-  try {
-    const { customerId, status, items } = req.body;
+    const { customer_id, status } = req.body;
     
-    if (!customerId || !status) {
-      return res.status(400).json({ 
-        error: 'Customer ID and status are required' 
-      });
-    }
-    
-    const newOrder = await prisma.order.create({
-      data: {
-        customerId,
-        status,
-        totalPrice: 0
-      }
-    });
-    
-    if (items && items.length > 0) {
-      let total = 0;
-      
-      for (const item of items) {
-        await prisma.orderItem.create({
-          data: {
-            orderId: newOrder.id,
-            productId: item.productId,
-            quantity: item.quantity,
-            price: item.price
-          }
+    try {
+        const newOrder = await prisma.order.create({
+            data: { 
+                customer_id: Number(customer_id), 
+                totalPrice: 0, 
+                status 
+            }
         });
-        total += item.quantity * Number(item.price);
-      }
-      
-      await prisma.order.update({
-        where: { id: newOrder.id },
-        data: { totalPrice: total }
-      });
+        res.status(201).json(newOrder);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
     }
-    
-    res.status(201).json(newOrder);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
 };
 
 exports.update = async (req, res) => {
   try {
     const id = Number(req.params.id);
-    const { customerId, status } = req.body;
+    const { customer_id, status } = req.body;
     
     const updatedOrder = await prisma.order.update({
       where: { id },
-      data: { customerId, status }
+      data: { customer_id, status }
     });
     
     res.json(updatedOrder);
@@ -112,34 +84,24 @@ exports.remove = async (req, res) => {
 exports.addItems = async (req, res) => {
   try {
     const orderId = Number(req.params.id);
-    const { items } = req.body;
+    const { productId, quantity, price } = req.body;
     
-    if (!items || !Array.isArray(items)) {
-      return res.status(400).json({ error: 'Items array is required' });
-    }
-    
-    let totalAdded = 0;
-    for (const item of items) {
-      await prisma.orderItem.create({
-        data: {
-          orderId,
-          productId: item.productId,
-          quantity: item.quantity,
-          price: item.price
-        }
+    if (!productId || !quantity || !price) {
+      return res.status(400).json({ 
+        error: 'Product ID, quantity, and price required' 
       });
-      totalAdded += item.quantity * Number(item.price);
     }
     
-    const order = await prisma.order.findUnique({ where: { id: orderId } });
-    const newTotal = Number(order.totalPrice || 0) + totalAdded;
-    
-    await prisma.order.update({
-      where: { id: orderId },
-      data: { totalPrice: newTotal }
+    const newOrderItem = await prisma.orderItem.create({
+      data: {
+        orderId: orderId,
+        productId: Number(productId),
+        quantity: Number(quantity),
+        price: Number(price)
+      }
     });
     
-    res.json({ message: 'Items added successfully', totalAdded });
+    res.status(201).json(newOrderItem);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

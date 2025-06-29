@@ -8,25 +8,23 @@ datasource db {
 }
 
 model Product {
-  id          Int       @id @default(autoincrement())
+  id          Int         @id @default(autoincrement())
   name        String
   description String?
   price       Decimal
-  image_url   String?
+  image_url   String
   category    String
-  createdAt   DateTime  @default(now())
-  
+  createdAt   DateTime    @default(now())
   orderItems  OrderItem[]
 }
 
 model Order {
-  order_id     Int       @id @default(autoincrement())
-  customer     String
-  total_price  Decimal?
-  status       String
-  createdAt    DateTime  @default(now())
-  
-  orderItems   OrderItem[]
+  order_id    Int         @id @default(autoincrement())
+  customer_id Int
+  total_price Decimal?
+  status      String
+  createdAt   DateTime    @default(now())
+  orderItems  OrderItem[]
 }
 
 model OrderItem {
@@ -35,7 +33,6 @@ model OrderItem {
   product_id    Int
   quantity      Int
   price         Decimal
-  
   order         Order   @relation(fields: [order_id], references: [order_id], onDelete: Cascade)
   product       Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
 }
